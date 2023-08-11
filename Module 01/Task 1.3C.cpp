@@ -1,0 +1,33 @@
+const int pirSensorPin = 2;      // PIR motion sensor connected to digital pin 2
+const int ledPin = 13;           // LED connected to digital pin 13
+const int soundSensorPin = 3;    // Sound sensor connected to digital pin 3
+
+bool previousMotionState = false; // Variable to keep track of previous motion state
+
+void setup() {
+  pinMode(pirSensorPin, INPUT);   // Set PIR motion sensor pin as input
+  pinMode(ledPin, OUTPUT);        // Set LED pin as output
+  pinMode(soundSensorPin, OUTPUT);// Set sound sensor pin as output
+  Serial.begin(9600);             // Initialize serial communication for debugging
+}
+
+void loop() {
+  int motionValue = digitalRead(pirSensorPin);
+  digitalWrite(ledPin, motionValue);
+
+  if (motionValue == HIGH) {
+    Serial.println("Motion Detected"); // Print message for motion detection
+    Serial.println("LED Status: ON");
+    tone(soundSensorPin, 800);        // Generate a 800Hz tone on the buzzer
+  } else {
+    if (previousMotionState) {
+      Serial.println("No Motion");    // Print message for no motion after motion was detected
+      Serial.println("LED Status: OFF");
+      previousMotionState = false;    // Reset the flag
+    }
+    noTone(soundSensorPin);           // Turn off the buzzer
+  }
+
+  previousMotionState = (motionValue == HIGH); // Update the flag
+  delay(1000);
+}
